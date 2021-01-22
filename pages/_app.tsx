@@ -1,5 +1,5 @@
-import { AppProps } from 'next/app'
-import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { AppProps } from "next/app";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
   html,
@@ -20,13 +20,13 @@ const GlobalStyle = createGlobalStyle`
   * {
     box-sizing: border-box;
   }
-`
+`;
 
 const theme = {
   colors: {
-    primary: '#0070f3',
-  },
-}
+    primary: "#0070f3"
+  }
+};
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -36,7 +36,7 @@ function App({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </ThemeProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
