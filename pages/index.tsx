@@ -1,29 +1,32 @@
-import { useState, useRef, useCallback, createRef } from "react";
-import Head from "next/head";
-import { Main, PageTitle } from "../components";
-import { getStories } from "./api/stories";
+import { useState, useRef, useCallback, Fragment } from "react";
 import { GetStaticProps } from "next";
-import List from "../components/List";
-import debounce from "lodash.debounce";
-import { getStory } from "./api/story";
+import Head from "next/head";
+import styled from "styled-components";
+
+import { Main, PageTitle, ListItem } from "../components";
+import { getStories, getStory } from "./api";
+import { useInfiniteScroll } from "../customHooks/useInfiniteScroll";
 
 type Props = {
   stories: Array<number>;
 };
 
+const Boundary = styled.div`
+  border: 1px solid;
+  visibility: hidden;
+`;
+
 function Home({ stories }: Props) {
   const limit = useRef(10);
-
+  const boundaryRef = useRef<HTMLDivElement>(null);
   const [currItems, setCurrItems] = useState(stories.slice(0, limit.current));
 
-  const handleScroll = useCallback(
-    debounce(() => {
-      limit.current += 10;
-      const newItems = [...stories].slice(0, limit.current);
-      setCurrItems(newItems);
-    }, 200),
-    [stories]
-  );
+  const handleScroll = useCallback(() => {
+    limit.current += 1;
+    setCurrItems([...stories].slice(0, limit.current));
+  }, [stories]);
+
+  useInfiniteScroll(boundaryRef, handleScroll);
 
   return (
     <div>
@@ -31,20 +34,22 @@ function Home({ stories }: Props) {
         <title>HackerNews</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
+      <PageTitle>HackerNews</PageTitle>
       <Main>
-        <PageTitle>HackerNews List</PageTitle>
-        <List
-          items={currItems}
-          onFetchItem={getStory}
-          onScroll={handleScroll}
-        />
+        {currItems &&
+          currItems.length &&
+          currItems.map((itemdId: number) => (
+            <Fragment key={itemdId}>
+              <ListItem itemId={itemdId} onFetchItem={getStory} />
+            </Fragment>
+          ))}
+          <Boundary ref={boundaryRef}></Boundary>
       </Main>
     </div>
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async context => {
   const stories = await getStories();
   return { props: { stories } };
 };

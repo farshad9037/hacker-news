@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, ReactNode } from "react";
 import styled from "styled-components";
-import { getStory } from "../pages/api/story";
+import { Link, FlexWrapper, ListItemSkeleton } from "./index";
 
 export type Item = {
   by: string;
@@ -19,33 +19,19 @@ type Props = {
   onFetchItem: (itemId: number) => void;
 };
 
-const Item = styled.li`
-  list-style: none;
-  background-color: blue;
-  padding: 8px;
-  margin: 8px;
+const Item = styled.article`
+  padding: 16px;
+  margin: 16px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
 `;
 
-const Title = styled.h2``;
-
-const Author = styled.p``;
-
-const Link = styled.button`
-  color: palevioletred;
-  font-size: 2em;
-  padding: 8px;
-  transform: rotate(90deg);
+const Title = styled.h3`
+  margin: 0;
 `;
 
-const Arrow = styled.span`
-  display: inline-block;
-  transform: rotate(90deg);
-`;
-
-const FlexContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const Author = styled.p`
+  margin: 0;
 `;
 
 function ListItem({ itemId, onFetchItem }: Props) {
@@ -64,18 +50,22 @@ function ListItem({ itemId, onFetchItem }: Props) {
     fetchStory();
   }, [fetchStory]);
 
-  return story && Object.keys(story).length ? (
+  return (
     <Item>
-      <Title>{story.title}</Title>
-      <FlexContainer>
-        <Author>{story.by}</Author>
-        <Link as="a" href={story.url} target="_blank" rel="noopener">
-          &#8689;
-        </Link>
-      </FlexContainer>
+      {story && Object.keys(story).length ? (
+        <>
+          <Title>{story.title}</Title>
+          <FlexWrapper>
+            <Author>{story.by}</Author>
+            <Link as="a" href={story.url} target="_blank" rel="noopener">
+              &#8689;
+            </Link>
+          </FlexWrapper>
+        </>
+      ) : (
+        <ListItemSkeleton />
+      )}
     </Item>
-  ) : (
-    <div>Loading...</div>
   );
 }
 

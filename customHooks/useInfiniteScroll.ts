@@ -5,7 +5,7 @@ export const useInfiniteScroll = (scrollRef, callback) => {
     node => {
       new IntersectionObserver(entries => {
         entries.forEach(en => {
-          if (en.intersectionRatio > 0) {
+          if (en.isIntersecting) {
             callback();
           }
         });
